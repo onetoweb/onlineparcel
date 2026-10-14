@@ -17,26 +17,19 @@ use DateTime;
  */
 class Client
 {
-    const METHOD_POST = 'POST';
-    
-    /**
-     * @var string
-     */
-    private $publicKey;
-    
-    /**
-     * @var string
-     */
-    private $secretKey;
-    
     /**
      * @param string $publicKey
      * @param string $secretKey
      */
-    public function __construct(string $publicKey, string $secretKey)
-    {
-        $this->publicKey = $publicKey;
-        $this->secretKey = $secretKey;
+    public function __construct(
+        
+        #[\SensitiveParameter]
+        private string $publicKey,
+        
+        #[\SensitiveParameter]
+        private string $secretKey
+    ) {
+        
     }
     
     /**
@@ -48,7 +41,7 @@ class Client
     {
         return hash_hmac('sha512', implode('|', [
             $this->publicKey,
-            self::METHOD_POST,
+            'POST',
             $endpoint,
             $jsonData,
             $timestamp
@@ -88,7 +81,7 @@ class Client
         ]);
         
         // make request
-        $result = $guzzleClient->request(self::METHOD_POST, $endpoint, $options);
+        $result = $guzzleClient->post($endpoint, $options);
         
         // get contents
         $contents = $result->getBody()->getContents();
